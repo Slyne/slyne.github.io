@@ -63,8 +63,7 @@ p2 = Norm(3, 2)
 
 
 class Transition():
-    def __init__(self, mean, sigma):
-        self.mean = mean
+    def __init__(self,sigma):
         self.sigma = sigma
 
     def sample(self, cur_mean):
@@ -76,7 +75,7 @@ class Transition():
 
 
 # 假设我们的转移核方差为10的正态分布
-q = Transition(0, 10)
+q = Transition(10)
 
 m = 100
 n = 100000
