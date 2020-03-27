@@ -24,9 +24,9 @@ $$
 
 在一个自回归的生成模型(autoregressive generative model)中，条件依赖关系是由一个具有固定数量参数的参数化函数表示的。假设条件分布 $p(x_i \| \mathbb{x}_{< i})$ 是一个伯努利分布，并且伯努利分布的均值参数是由前面的 $x_1, x_2, \dots, x_{i-1}$ 随机变量经过一个函数映射得到的。因此:
 
-$$p_{\theta_i}(x_i | \mathbb{x}_{< i}) = Bern(f_i(x_1, x_2, \dots, x_{i-1}))$$
+$$p_{\theta_i}(x_i \| \mathbb{x}_{< i}) = Bern(f_i(x_1, x_2, \dots, x_{i-1}))$$
 
-这里的 $\theta_i$ 是函数 $f_i$ 中的参数。因此，一个自回归生成模型的参数数量为 $\sum_{i=1}^n |\theta_i|$。
+这里的 $\theta_i$ 是函数 $f_i$ 中的参数。因此，一个自回归生成模型的参数数量为 $\sum_{i=1}^n \|\theta_i\|$。
 
 所以，我们可以看到这个自回归生成模型的表达能力被限制了，因为它的这些条件分布需要遵守伯努利分布，并且伯努利分布的均值是由一系列的参数化函数决定的。
 
@@ -178,3 +178,13 @@ $$\ell(\theta) = \log L(\theta, \mathcal{D}) = \sum_{j=1}^m\sum_{i=1}^n \log p_{
 对于自回归模型，计算 $p_\theta(x)$ 是很容易的。理想情况是可以并行计算 $\log p_{neural}(x_i^{(j)}|pa(x_i)^{(j)}; \theta_i)$，而不用像 RNNs。
 
 用最大似然估计很自然就可以训练了。高的 log-likelihood 并不一定意味着好看的样本。其它测量相似性的方法也是可能的，比如生成对抗模型-GAN。
+
+## 资料
+
+### 相关论文
+[PixelCNN++: Improving the PixelCNN with Discretized Logistic Mixture Likelihood and Other Modifications](https://arxiv.org/abs/1701.05517)
+
+### 相关代码实现
+
+[1]. https://github.com/openai/pixel-cnn
+
