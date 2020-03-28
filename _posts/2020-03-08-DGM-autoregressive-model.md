@@ -13,18 +13,18 @@ tags:
 通过链式法则，我们可以把 $n$ 维的联合概率分布分解成:
 
 $$
-p(\mathbf{x})= \prod_{i=1}^n p(x_i|x_1, x_2, \dots, x_{i-1}) = \prod_{i=1}^n p(x_i | \mathbf{x}_{< i})
+p(\mathbf{x})= \prod_{i=1}^n p(x_i |x_1, x_2, \dots, x_{i-1}) = \prod_{i=1}^n p(x_i | \mathbf{x}_{< i})
 $$
 
 这样的链式规则的因式分解可以从图上表示成一个贝叶斯网络 (Bayesian network):
 
-![autoregression bayesian network](/codes/DGM/autoregression_bayesian_network.JPG)
+<img src="/codes/DGM/autoregression_bayesian_network.JPG" width="300" height="300">
 
 这样的贝叶斯网络没有做条件独立性假设被称为遵守了自回归性质(autoregressive property)。这里我们定义了一个顺序(ordering)，第 $i$ 个随机变量按照这个选定的顺序依赖在它量前面的所有随机变量 $x_1, x_2, \dots, x_{i-1}$。
 
-在一个自回归的生成模型(autoregressive generative model)中，条件依赖关系是由一个具有固定数量参数的参数化函数表示的。假设条件分布 $p(x_i \| \mathbb{x}_{< i})$ 是一个伯努利分布，并且伯努利分布的均值参数是由前面的 $x_1, x_2, \dots, x_{i-1}$ 随机变量经过一个函数映射得到的。因此:
+在一个自回归的生成模型(autoregressive generative model)中，条件依赖关系是由一个具有固定数量参数的参数化函数表示的。假设条件分布 $p(x_i \|\mathbf{x_{< i}})$ 是一个伯努利分布，并且伯努利分布的均值参数是由前面的 $x_1, x_2, \dots, x_{i-1}$ 随机变量经过一个函数映射得到的。因此:
 
-$$p_{\theta_i}(x_i \| \mathbb{x}_{< i}) = Bern(f_i(x_1, x_2, \dots, x_{i-1}))$$
+$$p_{\theta_i}(x_i | \mathbf{x}_{< i}) = Bern(f_i(x_1, x_2, \dots, x_{i-1}))$$
 
 这里的 $\theta_i$ 是函数 $f_i$ 中的参数。因此，一个自回归生成模型的参数数量为 $\sum_{i=1}^n \|\theta_i\|$。
 
@@ -37,41 +37,42 @@ $$f_i(x_1, x_2, \dots, x_{i-1}) = \sigma(\alpha_0^{i} + \alpha_1^ix_1+ \dots + \
 
 其中 $\sigma$ 指的是sigmoid函数，参数 $\theta_i=\{\alpha_0^i, \alpha_1^i, \dots, \alpha_{i-1}^i\}$ 是均值函数 $f_i$的参数。因此，总的模型参数量为 $\sum_{i=1}^n i= O(n^2)$。
 
-![FBSBN](/codes/DGM/FVSBN.JPG)
+<img src="/codes/DGM/FVSBN.JPG" width="300" height="300">
 
 ### NADE
 
 为了增加自回归生成模型的表达能力(expressiveness)，我们可以用更加灵活的参数函数，比如多层感知机(multi-layer perceptrons, MLP)。例如，假设神经网络只有一个隐藏层，那么第 $i$ 个随机变量的均值函数可以表示为:
 
 $$\begin{align}
-& \mathbb{h}_i = \sigma(A_i \mathbb{x}_{< i} + c_i) \\
-&f_i(x_1, x_2, \dots, x_{i-1}) = \sigma(\mathbb{\alpha}^i\mathbb{h}_i + b_i)
+& \mathbf{h}_i = \sigma(A_i \mathbf{x}_{< i} + c_i) \\
+&f_i(x_1, x_2, \dots, x_{i-1}) = \sigma(\mathbf{\alpha}^i\mathbf{h}_i + b_i)
 \end{align}
 $$
 
-其中，$\mathbb{h}_i \in \mathbb{R}^d$ 是隐藏层的激活元，$\theta_i = \{ A_i \in \mathbb{R}^{d \times(i-1)}, \mathbb{c}_i \in \mathbb{R}^d, \mathbb{\alpha}^i \in \mathbb{R}^d, b_i \in \mathbb{R}\}$ 是第 $i$ 个均值函数的参数， 那么总参数主要取决于矩阵 $A_i$，所以我们可以得到总参数数量为 $O(n^2d)$
+其中，$\mathbf{h}_i \in \mathbf{R}^d$ 是隐藏层的激活元，$\theta_i = \{ A_i \in \mathbf{R}^{d \times(i-1)}, \mathbf{c}_i \in \mathbf{R}^d, \mathbf{\alpha}^i \in \mathbf{R}^d, b_i \in \mathbf{R}\}$ 是第 $i$ 个均值函数的参数， 那么总参数主要取决于矩阵 $A_i$，所以我们可以得到总参数数量为 $O(n^2d)$
 
-![NADE](/codes/DGM/NADE.JPG)
+<img src="/codes/DGM/NADE.JPG" width="300" height="300">
 
 我们发现参数量还是很大，因此另一个方法是用 Neural Autoregressive Density Estimator (NADE)，它采用了参数共享的方法，隐藏层表示为:
 
 $$\begin{align}
-& \mathbb{h}_i = \sigma(W_{.,< i} \mathbb{x}_{< i} + c_i) \\
-&f_i(x_1, x_2, \dots, x_{i-1}) = \sigma(\mathbb{\alpha}^i\mathbb{h}_i + b_i)
+& \mathbf{h}_i = \sigma(W_{.,< i} \mathbf{x}_{< i} + c_i) \\
+&f_i(x_1, x_2, \dots, x_{i-1}) = \sigma(\mathbf{\alpha}^i\mathbf{h}_i + b_i)
 \end{align}
 $$
 
-其中 $\theta = \{ W \in \mathbb{R}^{d \times n}, \mathbb{c}_i \in \mathbb{R}^d, \mathbb{\alpha}^i \in \mathbb{R}^d, b_i \in \mathbb{R}\}$ 是所有的均值函数($f_1(\cdot), f_2(\cdot), \dots, f_n(\cdot)$)的参数。矩阵 $W$ 和 偏差向量 $\mathbb{c}$ 在所有的均值函数之间共享，共享参数提供了两个好处:
+其中 $\theta = \{ W \in \mathbf{R}^{d \times n}, \mathbf{c}_i \in \mathbf{R}^d, \mathbf{\alpha}^i \in \mathbf{R}^d, b_i \in \mathbf{R}\}$ 是所有的均值函数($f_1(\cdot), f_2(\cdot), \dots, f_n(\cdot)$)的参数。矩阵 $W$ 和 偏差向量 $\mathbf{c}$ 在所有的均值函数之间共享，共享参数提供了两个好处:
 
 1. 总的参数量从 $O(n^2d)$ 减少到 $O(nd)$
 2. 隐藏层的激活值计算时间可以用下面的迭代策略减小到 $O(nd)$:
+
 $$\begin{align}
-\mathbb{h}_i &= \sigma(\mathbb{\alpha}_i) \\
-\mathbb{\alpha}_{i+1} &= \mathbb{\alpha}_i + W[.,i]x_i
+\mathbf{h}_i &= \sigma(\mathbf{\alpha}_i) \\
+\mathbf{\alpha}_{i+1} &= \mathbf{\alpha}_i + W[.,i]x_i
 \end{align}$$
 
 ### RNADE
-RNADE 算法拓展了 NADE来在实数数据上学习生成模型。假设我们的每个条件分布是由相等权重的 K个高斯组合而成的。 因此，我们不在学习一个均值函数，我们为每个条件分布都学习 K 个均值 $\mu_{i,1}, \mu_{i,2}, \dots, \mu_{i,K}$ 和 K 个方差 $\Sigma_{i,1}, \Sigma_{i,2}, \dots, \Sigma_{i,K}$, 每个函数 $g_i : \mathbb{R}^{i-1} \rightarrow \mathbb{R}^{2K}$ 为第 i 个条件分布输出了 K 个高斯的均值和方差。
+RNADE 算法拓展了 NADE来在实数数据上学习生成模型。假设我们的每个条件分布是由相等权重的 K个高斯组合而成的。 因此，我们不在学习一个均值函数，我们为每个条件分布都学习 K 个均值 $\mu_{i,1}, \mu_{i,2}, \dots, \mu_{i,K}$ 和 K 个方差 $\Sigma_{i,1}, \Sigma_{i,2}, \dots, \Sigma_{i,K}$, 每个函数 $g_i : \mathbf{R}^{i-1} \rightarrow \mathbf{R}^{2K}$ 为第 i 个条件分布输出了 K 个高斯的均值和方差。
 
 NADE 算法需要指定一个固定的随机变量顺序。选择不同的顺序会导致不同的模型。 [EoNADE](https://arxiv.org/abs/1310.1757) 算法允许用不同的顺序训练 NADE 模型的集合(ensemble)
 
@@ -111,7 +112,7 @@ $$p(x_t | x_{1:t-1}) = p(x_t^{red}|x_{1:t-1})p(x_t^{green}|x_{1:t-1},x_t^{red})p
 
 每个条件分布都是一个分类的(categorical)随机变量，256个值。条件分布的模型用 LSTMs + MASKing (类似于 MADE)。
 
-![pixel rnn](/codes/DGM/pixel_rnn.JPG)
+<img src="/codes/DGM/pixel_rnn.JPG" width="500" height="400">
 
 典型例子3: **PixelCNN**
 它用的是卷积的架构来在给定周边的像素情况下预测当前像素。因为要保证自回归的性质，所以用了掩码卷积(masked convolutions)，保留了光栅扫描的顺序。在颜色序上，需要额外的掩码。
@@ -141,13 +142,13 @@ WaveNet 是语音合成上的一个模型，它用了膨胀卷积(dilated convol
 接下来，我们来看一下如何让模型训练学习。
 前面我们提到过如果要学习一个生成模型，我们需要使得数据和模型之间的分布尽可能的近。一个经常用来衡量数据和模型分布之间近的程度的指标是 KL divergence，这个概念我们在 VI-变分推理里面也有提到。
 
-$$ \min \limits_{\theta \in \mathcal{M}} d_{KL}(p_{data},p_\theta) = \mathbb{E}_{\boldsymbol{x} \sim p_{data}}[\log p_{data}(\boldsymbol{x}) - \log p_\theta(\boldsymbol{x})]$$
+$$ \min \limits_{\theta \in \mathcal{M}} d_{KL}(p_{data},p_\theta) = \mathbf{E}_{\boldsymbol{x} \sim p_{data}}[\log p_{data}(\boldsymbol{x}) - \log p_\theta(\boldsymbol{x})]$$
 
 首先 KL divergence 是不对称的，其次，它惩罚模型分布 $p_\theta$ 如果它给那些在 $p_data$下很有可能的点赋值了很低的概率。
 
 因为 $p_data$ 不依赖 $\theta$, 我们可以发现可以通过最大似然估计来优化模型参数：
 
-$$\max \limits_{\theta \in \mathcal{M}} \mathbb{E}_{\boldsymbol{x} \sim p_{data}}[\log p_\theta(\boldsymbol{x})] $$
+$$\max \limits_{\theta \in \mathcal{M}} \mathbf{E}_{\boldsymbol{x} \sim p_{data}}[\log p_\theta(\boldsymbol{x})] $$
 
 为了能够近似未知的分布 $p_{data}$，我们假设在数据集 $\mathcal{D}$ 中的点都是独立同分布地 (i.i.d) 从 $p_{data}$ 中采样得到的。这就让我们可以获得目标函数的无偏蒙特卡洛估计:
 
@@ -168,7 +169,7 @@ $$\ell(\theta) = \log L(\theta, \mathcal{D}) = \sum_{j=1}^m\sum_{i=1}^n \log p_{
 当然我们也可以用随机梯度上升或者批量梯度上升(min-batch gradient ascent)等方法, 还有很多其它的随机梯度上升的变种，采用不同的更新参数机制像是 Adam 和 RMSprop。
 
 ## 推理 Inference
-在自回归模型中，推理是很直接的。对于任何一个样本$\boldsymbol{x}$ 的概率密度估计，只需要简单的计算每个随机变量的log 条件概率$\log p_{\theta_i}(x_i || \boldsymbol{x}_{< i})$，然后相加得到样本点 log-likelihood。
+在自回归模型中，推理是很直接的。对于任何一个样本$\boldsymbol{x}$ 的概率密度估计，只需要简单的计算每个随机变量的log 条件概率$\log p_{\theta_i}(x_i \| \boldsymbol{x}_{< i})$，然后相加得到样本点 log-likelihood。
 
 从自回归模型中采样是一个序列化的过程 (sequential procedure)。因此要先采样 $x_1$，然后根据 $x_1$ 的值采样 $x_2$，以此类推直到 $x_n$ (依赖前 $\boldsymbol{x}$)。对于像是需要实时生成高维数据的应用语音合成这样的应用，序列化的采样开销是很大的。
 
