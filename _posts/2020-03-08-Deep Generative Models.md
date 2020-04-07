@@ -1,6 +1,5 @@
 ---
 title: 深度生成模型--零
-description: 这篇文章是cs236 notes & PPT的阅读笔记，争取补充更多的代码例子
 categories:
 - 深度学习
 - 机器学习
@@ -9,6 +8,8 @@ tags:
 - 生成模型
 - 判别模型
 ---
+
+接下来的一系列文章是cs236 notes & PPT的阅读笔记，争取补充更多的代码例子
 
 ## 背景
 生成模型的目标是在给定了数据集 $\mathcal{D}$，并且假设这个数据集的底层分布(underlying distribution)是 $p_data$，我们希望够近似出这个数据分布。如果我们能够学习到一个好的生成模型，我们就能用这个生成模型为下游任务做inference <a href="#推理">推理</a>
