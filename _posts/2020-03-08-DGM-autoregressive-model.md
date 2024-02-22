@@ -32,7 +32,7 @@ $$p_{\theta_i}(x_i | \mathbf{x}_{< i}) = Bern(f_i(x_1, x_2, \dots, x_{i-1}))$$
 ### FVSBN
 最简单的自回归生成模型的例子是，我们制定了这些函数必须是输入元素的线性组合再接一个sigmoid函数(把输出限制到0到1之间)。那么我们就得到了 fully-visible sigmoid belief network (FVSBN)。
 
-$$f_i(x_1, x_2, \dots, x_{i-1}) = \sigma(\alpha_0^{i} + \alpha_1^ix_1+ \dots + \alpha_{i-1}^i)x_{i-1}$$
+$$f_i(x_1, x_2, \dots, x_{i-1}) = \sigma(\alpha_0^{i} + \alpha_1^ix_1+ \dots + \alpha_{i-1}^ix_{i-1})$$
 
 其中 $\sigma$ 指的是sigmoid函数，参数 $\theta_i=\{\alpha_0^i, \alpha_1^i, \dots, \alpha_{i-1}^i\}$ 是均值函数 $f_i$的参数。因此，总的模型参数量为 $\sum_{i=1}^n i= O(n^2)$。
 
